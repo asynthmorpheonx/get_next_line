@@ -6,11 +6,15 @@
 /*   By: mel-mouh <mel-mouh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:52:15 by mel-mouh          #+#    #+#             */
-/*   Updated: 2024/11/25 18:04:41 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2024/11/25 18:26:14 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+
+#ifndef BUFFER_SIZE
+# define BUFFER_SIZE 42
+#endif
 
 char	*ft_strjoin(char *s1, char *s2)
 {
@@ -31,19 +35,22 @@ char	*ft_strjoin(char *s1, char *s2)
 	free(s1);
 	return (str);
 }
-// static char	*ft_check(char	*remainder)
-// {
-// 	char	*tmp;
-// 	if (remainder && *remainder)
-// 	{
-// 		tmp = ft_strjoin(remainder, "");
-// 		remainder = NULL;
-// 		return (tmp);
-// 	}
-// 	free(remainder);
-// 	remainder = NULL;
-// 	return (NULL);
-// }
+
+static char	*ft_check(char	**remainder)
+{
+	char	*tmp;
+
+	if (remainder && *remainder)
+	{
+		tmp = ft_strjoin(*remainder, "");
+		*remainder = NULL;
+		return (tmp);
+	}
+	free(*remainder);
+	remainder = NULL;
+	return (NULL);
+}
+
 static char	*ft_reader(char *buffer, char *remainder)
 {
 	char	*line;
@@ -58,6 +65,7 @@ static char	*ft_reader(char *buffer, char *remainder)
 	free(buffer);
 	return (line);
 }
+
 char	*get_next_line(int fd)
 {
 	static char	*remainder;
@@ -81,16 +89,5 @@ char	*get_next_line(int fd)
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
 	free(buffer);
-	return (ft_check(remainder));
-}
-int main()
-{
-	int fd = open("test.txt", O_RDWR);
-	char *c = get_next_line(fd);
-	while (c)
-	{
-		printf("%s", c);
-		free(c);
-		c = get_next_line(fd);
-	}
+	return (ft_check(&remainder));
 }
