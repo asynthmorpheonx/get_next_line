@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel-mouh <mel-mouh@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mel-mouh <mel-mouh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:52:15 by mel-mouh          #+#    #+#             */
-/*   Updated: 2024/11/23 19:09:47 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2024/11/25 17:51:34 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,13 +31,36 @@ char	*ft_strjoin(char *s1, char *s2)
 	free(s1);
 	return (str);
 }
+static char	*ft_check(char	*remainder)
+{
+	if (remainder && *remainder)
+	{
+		remainder = ft_strjoin(remainder, "");
+		remainder = NULL;
+		return (remainder);
+	}
+	free(remainder);
+	remainder = NULL;
+	return (NULL);
+}
+static char	*ft_reader(char *buffer, char *remainder)
+{
+	char	*line;
+	char	*newline_pos;
 
+	newline_pos = ft_strchr(remainder, '\n');
+	line = malloc(ft_strch(remainder, '\n') + 2);
+	if (!line)
+		return (NULL);
+	ft_memcpy(line, remainder, ft_strch(remainder, '\n') + 1);
+	ft_memcpy(remainder, newline_pos + 1, ft_strlen(newline_pos + 1));
+	free(buffer);
+	return (line);
+}
 char	*get_next_line(int fd)
 {
 	static char	*remainder;
 	char		*buffer;
-	char		*newline_pos;
-	char		*line;
 	ssize_t		bytes_read;
 
 	if (fd < 0 || read(fd, NULL, 0) < 0)
@@ -50,36 +73,20 @@ char	*get_next_line(int fd)
 	{
 		buffer[bytes_read] = '\0';
 		remainder = ft_strjoin(remainder, buffer);
-		while ((newline_pos = ft_strchr(remainder, '\n')))
-		{
-			line = malloc(bytes_read + 1);
-			ft_memcpy(line, remainder, ft_strch(remainder, '\n') + 1);
-			ft_memcpy(remainder, newline_pos + 1, ft_strlen(newline_pos + 1));
-			free(buffer);
-			return (line);
-		}
-		free(buffer);
+		if (!remainder)
+			return (NULL);
+		if (ft_strchr(remainder, '\n'))
+			return (ft_reader(buffer, remainder));
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
 	free(buffer);
 	if (remainder && *remainder)
 	{
-		line = ft_strdup(remainder);
-		free(remainder);
+		remainder = ft_strjoin(remainder, "");
 		remainder = NULL;
-		return (line);
+		return (remainder);
 	}
 	free(remainder);
 	remainder = NULL;
-	return (NULL);
-}
-int main()
-{
-	int fd = open("test.txt", O_RDWR);
-	char *c = get_next_line(fd);
-	while (c)
-	{
-		printf("%s", c);
-		free(c);
-		c = get_next_line(fd);
-	}
+	return (ft_check(remainder));
 }
