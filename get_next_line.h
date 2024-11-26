@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 18:58:06 by mel-mouh          #+#    #+#             */
-/*   Updated: 2024/11/25 18:26:24 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2024/11/26 15:22:54 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,8 @@
 # include <fcntl.h>
 
 size_t	ft_strlen(const char *str);
-char	*ft_strjoin(char *s1, char *s2);
 char	*get_next_line(int fd);
 char	*ft_strchr(const char *str, int c);
-char	*ft_strdup(const char *s1);
 char	*ft_memcpy(char *dest, char *src, size_t n);
 size_t	ft_strch(const char *str, int c);
 

@@ -6,26 +6,28 @@
 /*   By: mel-mouh <mel-mouh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:52:15 by mel-mouh          #+#    #+#             */
-/*   Updated: 2024/11/25 18:26:14 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2024/11/26 15:27:43 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 42
+# define BUFFER_SIZE 1024
 #endif
 
-char	*ft_strjoin(char *s1, char *s2)
+static char	*ft_strjoin(char *s1, char *s2)
 {
 	size_t	len1;
 	size_t	len2;
 	char	*str;
 
 	len1 = 0;
+	len2 = 0;
 	if (s1)
 		len1 = ft_strlen(s1);
-	len2 = ft_strlen(s2);
+	if (s2)
+		len2 = ft_strlen(s2);
 	str = malloc(len1 + len2 + 1);
 	if (str == NULL)
 		return (NULL);
@@ -36,33 +38,29 @@ char	*ft_strjoin(char *s1, char *s2)
 	return (str);
 }
 
-static char	*ft_check(char	**remainder)
-{
-	char	*tmp;
-
-	if (remainder && *remainder)
-	{
-		tmp = ft_strjoin(*remainder, "");
-		*remainder = NULL;
-		return (tmp);
-	}
-	free(*remainder);
-	remainder = NULL;
-	return (NULL);
-}
-
-static char	*ft_reader(char *buffer, char *remainder)
+static char	*extract_line(char **remainder, char *buffer)
 {
 	char	*line;
 	char	*newline_pos;
+	char	*new_remainder;
 
-	newline_pos = ft_strchr(remainder, '\n');
-	line = malloc(ft_strch(remainder, '\n') + 2);
-	if (!line)
-		return (NULL);
-	ft_memcpy(line, remainder, ft_strch(remainder, '\n') + 1);
-	ft_memcpy(remainder, newline_pos + 1, ft_strlen(newline_pos + 1));
-	free(buffer);
+	newline_pos = ft_strchr(*remainder, '\n');
+	if (buffer)
+		free(buffer);
+	if (newline_pos)
+	{
+		line = malloc((ft_strch(*remainder, '\n') + 2) * sizeof(char));
+		ft_memcpy(line, *remainder, ft_strch(*remainder, '\n') + 1);
+		new_remainder = ft_strjoin(NULL, newline_pos + 1);
+		free(*remainder);
+		*remainder = new_remainder;
+	}
+	else
+	{
+		line = ft_strjoin(NULL, *remainder);
+		free(*remainder);
+		*remainder = NULL;
+	}
 	return (line);
 }
 
@@ -72,22 +70,35 @@ char	*get_next_line(int fd)
 	char		*buffer;
 	ssize_t		bytes_read;
 
-	if (fd < 0 || read(fd, NULL, 0) < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buffer = malloc(BUFFER_SIZE + 1);
-	if (!buffer)
+	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (buffer == NULL)
 		return (NULL);
 	bytes_read = read(fd, buffer, BUFFER_SIZE);
 	while (bytes_read > 0)
 	{
 		buffer[bytes_read] = '\0';
 		remainder = ft_strjoin(remainder, buffer);
-		if (!remainder)
-			return (NULL);
 		if (ft_strchr(remainder, '\n'))
-			return (ft_reader(buffer, remainder));
+			return (extract_line(&remainder, buffer));
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
 	free(buffer);
-	return (ft_check(&remainder));
+	if (remainder && *remainder)
+		return (extract_line(&remainder, NULL));
+	free(remainder);
+	remainder = NULL;
+	return (NULL);
 }
+// int main()
+// {
+// 	int fd = open("nl", O_RDWR);
+// 	char *c = get_next_line(fd);
+// 	while (c)
+// 	{
+// 		printf("%s", c);
+// 		free(c);
+// 		c = get_next_line(fd);
+// 	}
+// }
