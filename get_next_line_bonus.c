@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mel-mouh <mel-mouh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/23 14:52:15 by mel-mouh          #+#    #+#             */
-/*   Updated: 2024/11/27 00:15:09 by mel-mouh         ###   ########.fr       */
+/*   Created: 2024/11/26 23:28:03 by mel-mouh          #+#    #+#             */
+/*   Updated: 2024/11/27 00:14:45 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 #ifndef BUFFER_SIZE
 # define BUFFER_SIZE 1024
@@ -66,7 +66,7 @@ static char	*extract_line(char **remainder, char *buffer)
 
 char	*get_next_line(int fd)
 {
-	static char	*remainder;
+	static char	*remainders[1024];
 	char		*buffer;
 	ssize_t		bytes_read;
 
@@ -79,15 +79,15 @@ char	*get_next_line(int fd)
 	while (bytes_read > 0)
 	{
 		buffer[bytes_read] = '\0';
-		remainder = ft_strjoin(remainder, buffer);
-		if (ft_strchr(remainder, '\n'))
-			return (extract_line(&remainder, buffer));
+		remainders[fd] = ft_strjoin(remainders[fd], buffer);
+		if (ft_strchr(remainders[fd], '\n'))
+			return (extract_line(&remainders[fd], buffer));
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
 	free(buffer);
-	if (remainder && *remainder)
-		return (extract_line(&remainder, NULL));
-	free(remainder);
-	remainder = NULL;
+	if (remainders[fd] && *remainders)
+		return (extract_line(&remainders[fd], NULL));
+	free(remainders[fd]);
+	remainders[fd] = NULL;
 	return (NULL);
 }
