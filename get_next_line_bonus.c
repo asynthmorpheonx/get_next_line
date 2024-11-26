@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 23:28:03 by mel-mouh          #+#    #+#             */
-/*   Updated: 2024/11/27 00:14:45 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2024/11/27 00:47:15 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ char	*get_next_line(int fd)
 	char		*buffer;
 	ssize_t		bytes_read;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || BUFFER_SIZE > 2147483647)
 		return (NULL);
 	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
 	if (buffer == NULL)
@@ -85,7 +85,7 @@ char	*get_next_line(int fd)
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
 	free(buffer);
-	if (remainders[fd] && *remainders)
+	if (remainders[fd] && *remainders[fd])
 		return (extract_line(&remainders[fd], NULL));
 	free(remainders[fd]);
 	remainders[fd] = NULL;
