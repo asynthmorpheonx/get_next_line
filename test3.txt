@@ -1,3 +1,0 @@
-Line 1 from file 3
-This is a very long line in file 3 that is designed to test how get_next_line handles lines that might span multiple buffer reads, especially when the BUFFER_SIZE is smaller than this line.
-End of file 3

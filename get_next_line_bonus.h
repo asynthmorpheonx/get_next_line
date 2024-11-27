@@ -6,7 +6,7 @@
 /*   By: mel-mouh <mel-mouh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 18:58:06 by mel-mouh          #+#    #+#             */
-/*   Updated: 2024/11/26 23:32:15 by mel-mouh         ###   ########.fr       */
+/*   Updated: 2024/11/27 14:41:28 by mel-mouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <fcntl.h>
+# include <limits.h>
 
 size_t	ft_strlen(const char *str);
 char	*get_next_line(int fd);
